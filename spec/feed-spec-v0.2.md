@@ -196,8 +196,8 @@ primary path and is the only component that requires API credentials.
 - **Markdown** is canonical — lowest friction, renders cleanly everywhere,
   comments invisible.
 - **HTML** is a styled delivery format with the same markers in comments.
-- **PDF / DOCX**: out of scope for v0.2 (a tooling concern, not a protocol one).
-  A future version may define XMP/custom-XML embedding.
+- **PDF / DOCX**: markers cannot be reliably embedded — see *Delivery models*
+  below. Ship a FEED twin alongside the document instead.
 
 Two ingestion paths:
 
@@ -208,6 +208,26 @@ Two ingestion paths:
 Explicitly out of scope: white-text, hidden layers, steganography — fragile and
 dishonest. FEED is transparent; the tags are present in the source, just
 visually quiet.
+
+### Delivery models
+
+FEED is the **AI-ingestion layer, not the human deliverable** — a person reads the
+real report; FEED is what their AI reads. Two models, by source format:
+
+- **Embed (Markdown / HTML).** Markers are invisible HTML comments, so a single
+  file serves both audiences: humans see a clean rendered document, any AI reads
+  the FEED structure from the raw source.
+- **Twin-file (PDF / finished / binary).** Markers cannot be injected into a
+  finished PDF in a way an ingesting AI will read — AIs consume the visible text
+  layer, not metadata or attachments, and invisible text is the rejected
+  steganography route. Ship two files: the human report, and a **self-sufficient
+  FEED twin** (`*.feed.md`) carrying all the evidence, which the AI reads on its
+  own. They are parallel representations for two audiences, not a dependent pair.
+  The human report SHOULD carry one visible pointer line noting the twin exists,
+  so a document-only recipient knows the AI layer is available.
+
+Pipelines that generate FEED documents SHOULD emit both the report and its twin in
+the same step; twin-file then adds no assembly burden on the recipient.
 
 ---
 
